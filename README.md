@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Linkd - Tarjetas Digitales NFC
 
-## Getting Started
+Aplicación web para administrar tarjetas de presentación digitales NFC.
 
-First, run the development server:
+## Características
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Admin Panel**: Crear nuevas tarjetas con códigos de acceso únicos
+- **Portal Cliente**: Los clientes ingresan con su código de 3 caracteres
+- **Editor Visual**: Personalizar foto, datos de contacto y degradado de fondo
+- **Tarjeta Pública**: Vista optimizada para móvil con botones de contacto
+- **Exportar VCF**: Botón "Guardar Contacto" genera archivo vCard
+
+## Stack Tecnológico
+
+- **Frontend**: Next.js 16 con App Router
+- **Base de Datos**: PostgreSQL con Prisma ORM
+- **Estilos**: CSS Vanilla con diseño premium
+- **Deployment**: Docker (Dockploy)
+
+## Despliegue en Dockploy
+
+### 1. Crear Base de Datos PostgreSQL
+
+En Dockploy, crea un nuevo servicio de base de datos PostgreSQL.
+
+### 2. Crear Aplicación desde GitHub
+
+1. Conecta tu repositorio de GitHub
+2. Selecciona este proyecto
+3. Dockploy detectará automáticamente el `Dockerfile`
+
+### 3. Configurar Variables de Entorno
+
+En la configuración de la aplicación, agrega:
+
+```
+DATABASE_URL=postgresql://usuario:password@host:5432/nombre_db
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Usa la URL de conexión interna que te proporciona Dockploy para tu base de datos PostgreSQL.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Desplegar
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Haz clic en "Deploy". El script `start.sh` se encargará de:
+- Aplicar las migraciones de base de datos automáticamente
+- Iniciar el servidor
 
-## Learn More
+## Desarrollo Local
 
-To learn more about Next.js, take a look at the following resources:
+Para desarrollo local, necesitas PostgreSQL instalado o usar Docker:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Instalar dependencias
+npm install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Configurar variable de entorno
+echo 'DATABASE_URL="postgresql://usuario:password@localhost:5432/linkd"' > .env
 
-## Deploy on Vercel
+# Generar cliente Prisma
+npx prisma generate
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Aplicar migraciones
+npx prisma migrate dev
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Iniciar servidor de desarrollo
+npm run dev
+```
+
+## Rutas
+
+- `/` - Página principal
+- `/admin` - Panel de administración (crear tarjetas)
+- `/login` - Portal de acceso para clientes
+- `/edit` - Editor de tarjeta (requiere login)
+- `/card/[slug]` - Vista pública de la tarjeta
+
+## Estructura del Proyecto
+
+```
+├── src/
+│   ├── app/
+│   │   ├── admin/          # Panel admin
+│   │   ├── login/          # Login de clientes
+│   │   ├── edit/           # Editor de tarjeta
+│   │   ├── card/[slug]/    # Vista pública
+│   │   ├── actions.ts      # Server Actions
+│   │   └── globals.css     # Estilos globales
+│   └── lib/
+│       └── prisma.ts       # Cliente Prisma
+├── prisma/
+│   └── schema.prisma       # Schema de base de datos
+├── Dockerfile              # Configuración Docker
+└── start.sh                # Script de inicio
+```
+
+## Licencia
+
+MIT
